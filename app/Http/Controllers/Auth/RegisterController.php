@@ -10,7 +10,8 @@ class RegisterController extends Controller
 {
     public function __invoke(RegisterRequest $request)
     {
-        User::create($request->validated());
-        return $this->CreatedResponse();
+        User::create($request->validated())
+        ->sendEmailVerificationNotification(true);
+        return $this->CreatedResponse('Sent email verification code');
     }
 }

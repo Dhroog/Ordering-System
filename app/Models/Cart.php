@@ -14,7 +14,9 @@ class Cart extends Model
     protected $fillable = [
         'total',
         'main_cart_id',
-        'restaurant_id'
+        'restaurant_id',
+        'tax',
+        'delivery_cost'
     ];
 
     public function items(): HasMany

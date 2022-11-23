@@ -9,6 +9,11 @@ use App\Http\Requests\Categories\Main\UpdateMain_categoryRequest;
 
 class MainCategoryController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Main_category::class, 'Main_category');
+    }
+
     /**
      * Display a listing of the resource.
      *

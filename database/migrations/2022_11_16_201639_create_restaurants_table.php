@@ -19,6 +19,8 @@ return new class extends Migration
             $table->string('location');
             $table->string('description');
             $table->integer('rate')->default(0);
+            $table->integer('many_rated')->default(0);
+            $table->float('tax')->default(50);
             $table->decimal('lat', 10, 8);
             $table->decimal('lng', 11, 8);
             $table->timestamps();

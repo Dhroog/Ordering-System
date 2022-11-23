@@ -17,6 +17,9 @@ return new class extends Migration
             $table->id();
             $table->string('username');
             $table->string('email')->unique();
+            $table->decimal('lat', 10, 8);
+            $table->decimal('lng', 11, 8);
+            $table->boolean('is_admin')->default(false);
             $table->timestamp('email_verified_at')->nullable();
             $table->string('email_verify_code')->nullable();
             $table->timestamp('email_verify_code_sent_at')->nullable();

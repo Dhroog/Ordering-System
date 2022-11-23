@@ -39,35 +39,35 @@ class MainCartService
                 ->create(['total' => 0]);
     }
 
-    public function AddItem($item_id , $quantity)
+    public function AddItem($item_id , $quantity): bool
     {
         $restaurant_id = $this->itemService->SetItem($item_id)->GetRestaurantId();
-        $cart = $this->main_cart->cart()->where('restaurant_id',$restaurant_id)->first()//->get()->get(0)
+        $cart = $this->main_cart->cart()->where('restaurant_id',$restaurant_id)->first()
               ?? $this->main_cart->cart()->create(['restaurant_id' => $restaurant_id]);
         $cart_item = $cart->items()->where('item_id',$item_id)->first();
 
         if($cart_item){
-           return $this->cartService->SetCart( $cart)->IncreaseItem($cart_item->id,$quantity,$this->main_cart);
+           return $this->cartService->SetCart($cart)->IncreaseItem($cart_item->id,$quantity,$this->main_cart);
         }else{
            return $this->cartService->SetCart($cart)->AddItem($item_id,$quantity,$this->main_cart);
         }
     }
 
-    public function IncreaseItem($cart_id,$cart_item_id,$quantity)
+    public function IncreaseItem($cart_id,$cart_item_id,$quantity): bool
     {
        return $this->cartService
             ->SetCartByID($cart_id)
             ->IncreaseItem($cart_item_id,$quantity,$this->main_cart);
     }
 
-    public function ReduceItem($cart_id,$cart_item_id,$quantity)
+    public function ReduceItem($cart_id,$cart_item_id,$quantity): bool
     {
        return $this->cartService
             ->SetCartByID($cart_id)
             ->ReduceItem($cart_item_id,$quantity,$this->main_cart);
     }
 
-    public function DeleteItem($cart_id,$cart_item_id)
+    public function DeleteItem($cart_id,$cart_item_id): bool
     {
         return $this->cartService
             ->SetCartByID($cart_id)

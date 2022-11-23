@@ -15,9 +15,28 @@ class Restaurant extends Model
         'location',
         'description',
         'rate',
+        'tax',
         'lat',
         'lng'
     ];
+
+    public function scopeRateDescending($query)
+    {
+        return $query->orderBy('rate','DESC');
+    }
+
+    public function scopeNameDescending($query)
+    {
+        return $query->orderBy('name','DESC');
+    }
+
+    public function scopeOrder($query,$type)
+    {
+        if($type == 'rate')
+            return $query->orderBy('rate','DESC');
+        else
+            return $query->orderBy('name','ASC');
+    }
 
     public function category(): HasMany
     {

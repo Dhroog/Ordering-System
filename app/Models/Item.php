@@ -22,4 +22,13 @@ class Item extends Model
     {
         return $this->belongsTo(Category::class);
     }
+
+    public function offers(){
+        return $this->belongsToMany(
+            Offer::class,
+            'offer_items',
+            'offer_id',
+            'item_id');
+
+    }
 }

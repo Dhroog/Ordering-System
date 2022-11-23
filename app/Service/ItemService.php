@@ -57,4 +57,8 @@ class ItemService
     {
         return $this->GetItem()->category->Restaurant->id;
     }
+    public function GetRestaurantTax()
+    {
+        return $this->GetItem()->category->Restaurant->tax;
+    }
 }

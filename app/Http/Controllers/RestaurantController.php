@@ -6,17 +6,24 @@ use App\Http\Resources\RestaurantResource;
 use App\Models\Restaurant;
 use App\Http\Requests\Restaurant\StoreRestaurantRequest;
 use App\Http\Requests\Restaurant\UpdateRestaurantRequest;
+use Illuminate\Http\Request;
 
 class RestaurantController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Restaurant::class, 'Restaurant');
+    }
+
     /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Resources\Json\AnonymousResourceCollection
      */
-    public function index()
+    public function index(Request $request)
     {
-        return RestaurantResource::collection(Restaurant::Paginate());
+        $res = Restaurant::Order($request->get('type'))->paginate();
+        return RestaurantResource::collection($res);
     }
 
     /**

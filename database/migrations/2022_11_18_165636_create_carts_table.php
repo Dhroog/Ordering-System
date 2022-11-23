@@ -18,6 +18,8 @@ return new class extends Migration
             $table->unsignedBigInteger('main_cart_id');
             $table->unsignedBigInteger('restaurant_id');
             $table->decimal('total')->default(0);
+            $table->decimal('delivery_cost')->default(0);
+            $table->decimal('tax')->default(0);
             $table->timestamps();
             $table->foreign('main_cart_id')
                 ->references('id')

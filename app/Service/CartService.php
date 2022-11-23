@@ -4,6 +4,7 @@
 namespace App\Service;
 
 
+use App\Action\DeliveryAction;
 use App\Models\Cart;
 use App\Models\Cart_item;
 use App\Models\Main_cart;
@@ -15,25 +16,29 @@ class CartService
     protected User $user;
     protected Cart $cart;
     protected ItemService $itemService;
+    protected DeliveryAction $deliveryAction;
 
-    public function __construct(ItemService $itemService)
+    public function __construct(ItemService $itemService,DeliveryAction $deliveryAction)
     {
         $this->itemService = $itemService;
+        $this->deliveryAction = $deliveryAction;
     }
 
-    public function SetCartByID($id)
+    public function SetCartByID($id): static
     {
         $this->cart =  Cart::findOrFail($id);
+        $this->user = $this->cart->main_cart->user;
         return $this;
     }
 
-    public function SetCart(Cart $cart)
+    public function SetCart(Cart $cart): static
     {
         $this->cart = $cart;
+        $this->user = $cart->main_cart->user;
         return $this;
     }
 
-    public function AddItem($item_id,int $quantity,Main_cart $main_cart)
+    public function AddItem($item_id,int $quantity,Main_cart $main_cart): bool
     {
         if(
         $this->itemService
@@ -42,16 +47,20 @@ class CartService
             ->checkInventory()
         ){
             DB::transaction(function () use ($quantity,$main_cart) {
+                $delivery_cost = $this->deliveryAction->CalculateDeliveryCost($this->user,$this->cart->restaurant_id);
+                $tax = $this->itemService->GetRestaurantTax();
                 $this->itemService
                     ->ReduceInventory()
                     ->save();
                 $this->cart->total += $this->itemService->CalculateTotalPrice();
+                $this->cart->delivery_cost = $delivery_cost;
+                $this->cart->tax = $tax;
                 $this->cart->save();
                 $this->cart->items()->create([
                     'item_id' => $this->itemService->GetItem()->id,
                     'quantity' => $quantity
                 ]);
-                $main_cart->total += $this->itemService->CalculateTotalPrice();
+                $main_cart->total += $this->itemService->CalculateTotalPrice() + $delivery_cost + $tax;
                 $main_cart->save();
             });
             return true;
@@ -59,7 +68,7 @@ class CartService
         return false;
     }
 
-    public function IncreaseItem(int $cart_item_id,int $quantity,Main_cart $main_cart)
+    public function IncreaseItem(int $cart_item_id,int $quantity,Main_cart $main_cart): bool
     {
         $cart_item = Cart_item::findOrFail($cart_item_id);
         if($this->cart->id != $cart_item->cart->id)
@@ -86,7 +95,7 @@ class CartService
         return false;
     }
 
-    public function ReduceItem($cart_item_id,$quantity,Main_cart $main_cart)
+    public function ReduceItem($cart_item_id,$quantity,Main_cart $main_cart): bool
     {
         $cart_item = Cart_item::findOrFail($cart_item_id);
         if($this->cart->id != $cart_item->cart->id)
@@ -112,7 +121,7 @@ class CartService
         return true;
     }
 
-    public function DeleteItem($cart_item,$main_cart,$cart_item_id = null)
+    public function DeleteItem($cart_item,$main_cart,$cart_item_id = null): bool
     {
         $cart_item = $cart_item_id
             ? Cart_item::findOrFail($cart_item_id)
@@ -143,6 +152,8 @@ class CartService
             $this->DeleteItem($cart_item,$main_cart);
         }
         $this->cart->delete();
+        $main_cart->total -= ( $this->cart->delivery_cost + $this->cart->tax );
+        $main_cart->save();
     }
 
 }

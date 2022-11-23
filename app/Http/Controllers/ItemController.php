@@ -9,6 +9,10 @@ use App\Http\Requests\Item\UpdateItemRequest;
 
 class ItemController extends Controller
 {
+    public function __construct()
+    {
+        $this->authorizeResource(Item::class, 'Item');
+    }
     /**
      * Display a listing of the resource.
      *

@@ -12,7 +12,7 @@ return [
     |
     */
 
-    'max_attempts' => env('MOBILE_MAX_ATTEMPTS', 3)?:0,
+    'max_attempts' => env('EMAIL_MAX_ATTEMPTS', 3)?:0,
 
     /*
     |--------------------------------------------------------------------------

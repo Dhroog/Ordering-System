@@ -42,8 +42,9 @@ class VerifyEmail extends Notification
     public function toMail($notifiable)
     {
         return (new MailMessage)
+            ->subject('Verify Email Address')
                     ->line('your code verification is : '. $this->code)
-                    ->line('Thank you for using our application!');
+                    ->line('If you did not create an account, no further action is required.');
     }
 
     /**

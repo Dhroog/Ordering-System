@@ -1,15 +1,19 @@
 <?php
 
+use App\Http\Controllers\Auth\ForgetPasswordController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\LogoutController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Auth\ResendCodeVerificationController;
+use App\Http\Controllers\Auth\ResetPasswordController;
 use App\Http\Controllers\Auth\VerifyEmailController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function (){
     Route::post('/register',[RegisterController::class,'__invoke']);
     Route::post('/login',[LoginController::class,'__invoke']);
+    Route::post('password/email',  ForgetPasswordController::class);
+    Route::post('password/reset', ResetPasswordController::class);
 });
 
 Route::middleware('auth:sanctum')->group(function (){
@@ -19,4 +23,3 @@ Route::middleware('auth:sanctum')->group(function (){
     Route::get('/logout', [LogoutController::class,'__invoke']);
 
 });
-
